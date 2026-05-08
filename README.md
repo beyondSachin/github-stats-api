@@ -1,4 +1,4 @@
-# 🚀 GitHub Stats API
+# GitHub Stats API
 
 A fast, customizable, and developer-friendly **TypeScript API** that generates dynamic SVG GitHub stats — designed for reliability, extensibility, and clean architecture.
 
@@ -6,7 +6,7 @@ A fast, customizable, and developer-friendly **TypeScript API** that generates d
 
 ---
 
-## 🌍 Why this exists
+## Why this exists
 
 Most GitHub stats services:
 
@@ -22,105 +22,117 @@ This project solves that by giving you:
 
 ---
 
-## ✨ Features
+## Features
 
-- 📊 **Rich GitHub Metrics**
+- **Rich GitHub Metrics**
   - Repositories, Stars, Forks
   - Followers / Following
   - Public Gists
   - Most Starred Repository
   - Joined Year
 
-- 🎨 **Theme System**
+- **Theme System**
   - Built-in themes: `github` (default), `ocean`, `forest`, `sunset`, `dracula`
   - Fully overrideable via query params
 
-- 🧩 **Composable Design**
+- **Composable Design**
   - Separate layers: `data → aggregation → rendering`
   - Easy to extend (add metrics, layouts, themes)
 
-- 📐 **Flexible Layouts**
+- **Flexible Layouts**
   - `default` (detailed card)
   - `compact` (minimal footprint)
 
-- ⚡ **Modern Stack**
-  - TypeScript
-  - Native Fetch API (no axios)
-  - Node.js 18+ / Edge-compatible
-
-- 🧠 **Production-minded**
+- **Production-grade**
+  - Full repo pagination (fetches all pages)
+  - Request timeout (10s) on GitHub API calls
+  - SVG injection protection (XML escaping)
+  - Username validation with descriptive errors
+  - Typed error responses (404, 429, 401, 5xx)
+  - CORS headers included
+  - Health check endpoint
   - Cache headers included
-  - Token-based GitHub API access
-  - Designed for serverless deployment
+
+- **Modern Stack**
+  - TypeScript (strict mode)
+  - Native Fetch API (no axios, no dotenv)
+  - Node.js 18+ / Edge-compatible
 
 ---
 
-## 🧱 Architecture
+## Architecture
 
 ```text
 Request → GitHub API → Stats Engine → SVG Renderer → Response
 ```
 
-| Layer       | Responsibility       |
+| Layer | Responsibility |
 | ----------- | -------------------- |
-| `github.ts` | Fetch GitHub data    |
-| `stats.ts`  | Aggregate & compute  |
-| `svg.ts`    | Render visual output |
-| `server.ts` | API interface        |
+| `types.ts` | Shared types & error classes |
+| `github.ts` | Fetch GitHub data (with pagination & timeout) |
+| `stats.ts` | Aggregate & compute |
+| `svg.ts` | Render visual output (with XML escaping) |
+| `server.ts` | API interface (validation, error handling, CORS) |
 
 ---
 
-## 🎨 Customization
+## API Reference
 
-### Themes
+### `GET /api?username=<user>`
+
+Returns an SVG image with GitHub stats.
+
+**Query Parameters**
+
+| Param | Type | Default | Description |
+| ----- | ---- | ------- | ----------- |
+| `username` | `string` | — | GitHub username (required, validated) |
+| `theme` | `string` | `github` | Theme name: `github`, `ocean`, `forest`, `sunset`, `dracula` |
+| `layout` | `string` | `default` | Layout: `default` or `compact` |
+| `bg` | `string` | theme | Background color (hex, with or without `#`) |
+| `border` | `string` | theme | Card border color |
+| `title` | `string` | theme | Heading color |
+| `text` | `string` | theme | Main text color |
+| `accent` | `string` | theme | Secondary text color |
+| `card` | `string` | theme | Highlight card color |
+
+**Error Responses**
+
+| Status | Meaning |
+| ------ | ------- |
+| `400` | Missing or invalid `username` parameter |
+| `401` | GitHub token is unauthorized |
+| `404` | GitHub user not found |
+| `429` | GitHub API rate limit exceeded |
+| `500` | Unexpected server error |
+
+**Examples**
 
 ```bash
-?theme=dracula
+# Default
+/api?username=octocat
+
+# Themed
+/api?username=octocat&theme=dracula
+
+# Compact layout
+/api?username=octocat&layout=compact
+
+# Custom colors
+/api?username=octocat&bg=0d1117&title=58a6ff&text=c9d1d9
 ```
 
-Available:
+### `GET /health`
 
-- `github` (default theme)
-- `ocean`
-- `forest`
-- `sunset`
-- `dracula`
+Returns a simple health check.
+
+```json
+{ "status": "ok" }
+```
 
 ---
 
-### Layouts
-
-```bash
-?layout=compact
-```
-
-| Layout    | Description                |
-| --------- | -------------------------- |
-| `default` | Full stats + featured repo |
-| `compact` | Minimal summary            |
-
----
-
-### Custom Colors
-
-Override any theme:
-
-```bash
-?bg=0d1117&title=58a6ff&text=c9d1d9
-```
-
-| Param    | Purpose        |
-| -------- | -------------- |
-| `bg`     | Background     |
-| `border` | Card border    |
-| `title`  | Heading        |
-| `text`   | Main text      |
-| `accent` | Secondary text |
-| `card`   | Highlight card |
-
----
-
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone
 
@@ -129,15 +141,11 @@ git clone https://github.com/sachinksamad1/github-stats-api.git
 cd github-stats-api
 ```
 
----
-
 ### 2. Install
 
 ```bash
 npm install
 ```
-
----
 
 ### 3. Generate a GitHub Token
 
@@ -161,8 +169,6 @@ GITHUB_TOKEN=your_token_here
 PORT=3000
 ```
 
----
-
 ### 5. Run
 
 ```bash
@@ -173,11 +179,12 @@ Test:
 
 ```bash
 http://localhost:3000/api?username=your-username
+http://localhost:3000/health
 ```
 
 ---
 
-## ☁️ Deployment
+## Deployment
 
 ### Vercel (Recommended)
 
@@ -193,7 +200,7 @@ http://localhost:3000/api?username=your-username
 
 ---
 
-## 🖼️ Usage in README
+## Usage in README
 
 ```markdown
 ![GitHub Stats](https://your-app.vercel.app/api?username=your-username)
@@ -201,7 +208,7 @@ http://localhost:3000/api?username=your-username
 
 ---
 
-## 🧪 Example Variants
+## Example Variants
 
 ```markdown
 # Theme
@@ -219,7 +226,21 @@ http://localhost:3000/api?username=your-username
 
 ---
 
-## 🧩 Extending the Project
+## Testing
+
+```bash
+npm test        # Run tests once
+npm run test:watch  # Watch mode
+```
+
+The test suite covers:
+
+- **Stats computation** — star/fork totals, most starred repo, language tallying, edge cases (null fields, empty repos)
+- **SVG rendering** — valid XML output, escaping of user-provided content, layout-specific elements
+
+---
+
+## Extending the Project
 
 This project is intentionally designed for extension.
 
@@ -238,17 +259,13 @@ Examples:
 - issue stats
 - contribution streaks
 
----
-
 ### Add new theme
 
 Edit:
 
 ```text
-src/themes.ts (create if needed)
+src/themes.ts
 ```
-
----
 
 ### Add new layout
 
@@ -260,7 +277,7 @@ src/svg.ts
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome — especially thoughtful ones.
 
@@ -270,19 +287,17 @@ Contributions are welcome — especially thoughtful ones.
 - Maintain separation of concerns
 - Avoid unnecessary dependencies
 - Prefer native APIs (e.g., `fetch`)
-
----
+- Add tests for new functionality
 
 ### Development Workflow
 
 ```bash
 git checkout -b feat/your-feature
 npm run dev
-npm run format # Format files with Prettier
-npm run lint   # Lint files with ESLint
+npm test        # Run tests
+npm run format  # Format files with Prettier
+npm run lint    # Lint files with ESLint
 ```
-
----
 
 ### Commit Convention
 
@@ -294,15 +309,14 @@ refactor: split svg renderer
 
 ---
 
-## ⚠️ Limitations
+## Limitations
 
-- GitHub REST API limited to 100 repos/page
-- Rate limits without token (~60/hr)
 - No historical contribution data (without GraphQL)
+- Rate limits without token (~60/hr)
 
 ---
 
-## 🛡️ Best Practices
+## Best Practices
 
 - Always use a `GITHUB_TOKEN`
 - Enable caching (already configured)
@@ -310,16 +324,16 @@ refactor: split svg renderer
 
 ---
 
-## 📜 License
+## License
 
 MIT — use it, modify it, build on top of it.
 
 ---
 
-## ⭐ Final Note
+## Final Note
 
 This is not just a widget.
 
-It’s a **foundation for building developer-facing visual APIs**.
+It's a **foundation for building developer-facing visual APIs**.
 
 If you extend it in interesting ways — consider contributing back.

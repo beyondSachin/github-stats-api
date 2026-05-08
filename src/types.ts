@@ -1,3 +1,13 @@
+export class GitHubError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number
+  ) {
+    super(message);
+    this.name = "GitHubError";
+  }
+}
+
 export interface GitHubUser {
   login: string;
   name: string | null;

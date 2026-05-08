@@ -1,5 +1,6 @@
 import express from "express";
 import { getUserData, getRepos } from "./github.js";
+import { GitHubError } from "./types.js";
 import { calculateStats } from "./stats.js";
 import { generateSVG, generateCompactSVG } from "./svg.js";
 import { themes, type ThemeColors } from "./themes.js";
@@ -15,11 +16,17 @@ if (!GITHUB_TOKEN) {
   );
 }
 
-// Helper to ensure colors have # prefix
+const USERNAME_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/;
+
 const getColor = (queryVal: string | undefined, fallback: string): string => {
   if (!queryVal) return fallback;
   return queryVal.startsWith("#") ? queryVal : `#${queryVal}`;
 };
+
+app.use((_req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 app.get("/api", async (req, res) => {
   const username = req.query["username"] as string;
@@ -31,15 +38,17 @@ app.get("/api", async (req, res) => {
     return;
   }
 
-  // Backward compatibility: check if theme param is used for layout
+  if (!USERNAME_REGEX.test(username)) {
+    res.status(400).send("Invalid GitHub username format");
+    return;
+  }
+
   const isCompact = layoutParam === "compact" || themeParam === "compact";
 
-  // Determine base theme name (ignoring "compact" if used there)
   const themeName =
     (themeParam === "compact" ? "github" : themeParam) || "github";
   const baseTheme = themes[themeName] || themes["github"]!;
 
-  // Custom color overrides with # prefix safety
   const theme: ThemeColors = {
     bg: getColor(req.query["bg"] as string, baseTheme.bg),
     border: getColor(req.query["border"] as string, baseTheme.border),
@@ -63,9 +72,17 @@ app.get("/api", async (req, res) => {
     res.setHeader("Cache-Control", "s-maxage=3600");
     res.send(svg);
   } catch (error) {
+    if (error instanceof GitHubError) {
+      res.status(error.statusCode).send(error.message);
+      return;
+    }
     console.error(error);
     res.status(500).send("Failed to generate stats");
   }
+});
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
 });
 
 export default app;
