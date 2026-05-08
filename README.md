@@ -139,7 +139,20 @@ npm install
 
 ---
 
-### 3. Configure
+### 3. Generate a GitHub Token
+
+This API requires a GitHub Personal Access Token to avoid rate limits.
+
+1. Go to [GitHub Tokens Settings](https://github.com/settings/tokens)
+2. Click **Generate new token** → **Generate new token (classic)**
+3. Give it a name (e.g., `github-stats-api`)
+4. Set expiration as desired (no expiry is fine for self-hosted)
+5. **No scopes needed** — the API only accesses public data, so leave all checkboxes unchecked
+6. Click **Generate token** and copy the token
+
+> Your token is shown only once. Store it securely.
+
+### 4. Configure
 
 Create `.env` (only for local development):
 
@@ -150,7 +163,7 @@ PORT=3000
 
 ---
 
-### 4. Run
+### 5. Run
 
 ```bash
 npm run dev
