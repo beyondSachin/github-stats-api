@@ -30,12 +30,12 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sachinksamad1/github-stats-api.git"
+    "url": "git+https://github.com/beyondSachin/github-stats-api.git"
   },
   "bugs": {
-    "url": "https://github.com/sachinksamad1/github-stats-api/issues"
+    "url": "https://github.com/beyondSachin/github-stats-api.git"
   },
-  "homepage": "https://github.com/sachinksamad1/github-stats-api#readme",
+  "homepage": "https://github.com/beyondSachin/github-stats-api.git#readme",
   "dependencies": {
     "express": "^5.2.1"
   },

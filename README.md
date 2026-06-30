@@ -140,7 +140,7 @@ Returns a simple health check.
 ### 1. Clone
 
 ```bash
-git clone https://github.com/sachinksamad1/github-stats-api.git
+git clone https://github.com/beyondSachin/github-stats-api.git
 cd github-stats-api
 ```
 
